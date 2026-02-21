@@ -6,8 +6,11 @@ import {
   Loader2,
   LogOut,
   MessageSquare,
+  Monitor,
+  Moon,
   Settings,
   Shield,
+  Sun,
   User,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -18,10 +21,13 @@ import { applyTheme } from "~/hooks/use-theme.js";
 import { callApi } from "~/server/api.js";
 import type { Route } from "./+types/authenticated-layout";
 
+type Theme = "light" | "dark" | "system";
+
 interface AuthUser {
   id: string;
   name: string;
   role: string;
+  ui_theme?: string;
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -52,6 +58,7 @@ function LayoutShell() {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [theme, setTheme] = useState<Theme>((user.ui_theme as Theme) ?? "system");
 
   useEffect(() => {
     if (!dropdownOpen) return;
@@ -63,6 +70,19 @@ function LayoutShell() {
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, [dropdownOpen]);
+
+  function cycleTheme() {
+    const order: Theme[] = ["light", "dark", "system"];
+    const next = order[(order.indexOf(theme) + 1) % order.length];
+    setTheme(next);
+    applyTheme(next);
+    // Persist to profile (fire-and-forget)
+    fetch("/api/me", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ui_theme: next }),
+    }).catch(() => {});
+  }
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });

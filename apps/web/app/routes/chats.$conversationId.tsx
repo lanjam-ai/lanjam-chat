@@ -528,6 +528,7 @@ export default function ConversationPage() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const composerRef = useRef<HTMLDivElement>(null);
   const pendingSentRef = useRef(false);
   const userScrolledRef = useRef(false);
 
@@ -1303,8 +1304,18 @@ export default function ConversationPage() {
   function handleEditLastQuestion(msgId: string, content: string) {
     setEditingMessageId(msgId);
     setInput(content);
-    // Focus the textarea
-    setTimeout(() => textareaRef.current?.focus(), 0);
+    // Scroll composer into view, focus, and pulse
+    setTimeout(() => {
+      textareaRef.current?.focus();
+      const el = composerRef.current;
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "end" });
+        el.classList.remove("edit-pulse");
+        // Force reflow so re-adding the class restarts the animation
+        void el.offsetWidth;
+        el.classList.add("edit-pulse");
+      }
+    }, 0);
   }
 
   function cancelEdit() {
@@ -2301,6 +2312,7 @@ export default function ConversationPage() {
 
             {/* Composer container */}
             <div
+              ref={composerRef}
               className={`rounded-2xl border ${editingMessageId ? "border-primary/50" : "border-input"} bg-background dark:bg-[#232840] ${noModelsAvailable ? "opacity-50 pointer-events-none" : ""}`}
             >
               <textarea

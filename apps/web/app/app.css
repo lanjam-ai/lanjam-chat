@@ -169,3 +169,19 @@
     transform: translateY(0);
   }
 }
+
+.edit-pulse {
+  animation: edit-glow 0.8s ease-out;
+}
+
+@keyframes edit-glow {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 50%, transparent);
+  }
+  40% {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-primary) 30%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
