@@ -14,7 +14,6 @@ import {
   Copy,
   FileText,
   FolderOpen,
-  Globe,
   Info,
   Loader2,
   Mic,
@@ -30,7 +29,6 @@ import {
   Trash2,
   User,
   X,
-  Zap,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Markdown, { type Components } from "react-markdown";
@@ -38,6 +36,7 @@ import { useLoaderData, useNavigate } from "react-router";
 import remarkGfm from "remark-gfm";
 import { AiDisclaimerModal } from "~/components/ai-disclaimer-modal.js";
 import { ConfirmModal } from "~/components/confirm-modal.js";
+import { ModelSelector, type AvailableModel } from "~/components/model-selector.js";
 import { FilesModal } from "~/components/files-modal.js";
 import { TitleEditModal } from "~/components/title-edit-modal.js";
 import { VoiceOverlay } from "~/components/voice-overlay.js";
@@ -136,11 +135,7 @@ interface Message {
   version_number?: number;
 }
 
-interface AvailableModel {
-  id: string;
-  name: string;
-  host: string | null;
-}
+
 
 interface AuthUser {
   id: string;
@@ -346,8 +341,6 @@ export default function ConversationPage() {
   const [selectedModel, setSelectedModel] = useState<AvailableModel | null>(
     initialConvModel ?? initialActiveModel ?? initialModels[0] ?? null,
   );
-  const [showModelDropdown, setShowModelDropdown] = useState(false);
-  const modelDropdownRef = useRef<HTMLDivElement>(null);
   const [expandedMetadata, setExpandedMetadata] = useState<Set<string>>(new Set());
   const [metadataSheetMsg, setMetadataSheetMsg] = useState<(typeof messages)[number] | null>(null);
   const [streamContent, setStreamContent] = useState("");
@@ -582,7 +575,6 @@ export default function ConversationPage() {
     setConversationFiles(initialFiles);
     setAvailableModels(initialModels);
     setSelectedModel(initialConvModel ?? initialActiveModel ?? initialModels[0] ?? null);
-    setShowModelDropdown(false);
     setExpandedMetadata(new Set());
     setStreamContent("");
     setIsStreaming(false);
@@ -604,18 +596,6 @@ export default function ConversationPage() {
     setShowDisclaimerModal(false);
     setPendingSendArgs(null);
   }, [initialConv.id]);
-
-  // Close model dropdown on outside click
-  useEffect(() => {
-    if (!showModelDropdown) return;
-    function handleClick(e: MouseEvent) {
-      if (modelDropdownRef.current && !modelDropdownRef.current.contains(e.target as Node)) {
-        setShowModelDropdown(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [showModelDropdown]);
 
   // Close 3-dot menu on outside click
   useEffect(() => {
@@ -2368,54 +2348,12 @@ export default function ConversationPage() {
                     <Mic className="h-4 w-4" />
                   </button>
                   {/* Model selector */}
-                  {availableModels.length > 1 ? (
-                    <div ref={modelDropdownRef} className="relative ml-1">
-                      <button
-                        type="button"
-                        disabled={isStreaming}
-                        onClick={() => setShowModelDropdown(!showModelDropdown)}
-                        className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-muted-foreground hover:bg-accent hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      >
-                        <Zap className="h-3 w-3" />
-                        <span className="max-w-[120px] truncate">
-                          {selectedModel?.name ?? "Select model"}
-                        </span>
-                        <ChevronDown className="h-3 w-3" />
-                      </button>
-                      {showModelDropdown && (
-                        <div className="absolute left-0 bottom-full z-20 mb-1 min-w-[200px] max-h-[240px] overflow-y-auto rounded-md border border-border bg-card py-1 shadow-lg">
-                          {availableModels.map((m) => (
-                            <button
-                              key={m.id}
-                              type="button"
-                              onClick={() => {
-                                setSelectedModel(m);
-                                setShowModelDropdown(false);
-                              }}
-                              className={`flex w-full items-center gap-2 px-3 py-1.5 text-xs hover:bg-accent ${
-                                selectedModel?.id === m.id ? "bg-accent/50 font-medium" : ""
-                              }`}
-                            >
-                              {m.host ? (
-                                <Globe className="h-3 w-3 text-blue-500" />
-                              ) : (
-                                <Zap className="h-3 w-3" />
-                              )}
-                              <span className="truncate">{m.name}</span>
-                              {selectedModel?.id === m.id && (
-                                <Check className="h-3 w-3 ml-auto text-primary" />
-                              )}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ) : availableModels.length === 1 ? (
-                    <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/60 ml-1 px-1">
-                      <Zap className="h-3 w-3" />
-                      <span className="max-w-[120px] truncate">{availableModels[0].name}</span>
-                    </span>
-                  ) : null}
+                  <ModelSelector
+                    models={availableModels}
+                    selected={selectedModel}
+                    onSelect={setSelectedModel}
+                    disabled={isStreaming}
+                  />
                 </div>
                 {isStreaming ? (
                   <button
