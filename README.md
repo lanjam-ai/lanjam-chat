@@ -1,111 +1,163 @@
-# LanJAM Project Guide
+# LanJAM
 
-## What is LanJAM?
+A free, open-source, self-hosted AI chat application designed for families. Run your own private ChatGPT-like experience on your local network — no cloud services, no subscriptions, no data leaving your home.
 
-LanJAM is a self-hosted, LAN-only family ChatGPT style web app. It provides a multi-user chat interface backed by local LLM inference via Ollama, with per-user data isolation, file uploads with RAG (retrieval-augmented generation), and an admin dashboard.
+## Why LanJAM?
 
-## Architecture
+- **Private by design** — conversations, files, and user data never leave your network
+- **Family-friendly** — role-based safety system with age-appropriate content filtering
+- **Self-hosted** — runs entirely on your own hardware using local AI models via Ollama
+- **Multi-user** — each family member gets their own account with isolated data
+- **No internet required** — fully functional offline after initial setup
 
-**TurboRepo monorepo** with pnpm workspaces:
+## Features
 
-```
-apps/
-  web/           → React Router 7 (framework mode, SSR) + Tailwind v4 + lucide-react
-packages/
-  api/           → Route handlers, services, middleware (handler→service→repo pattern)
-  db/            → Drizzle ORM schemas, repositories, migrations (PostgreSQL + pgvector)
-  utils/         → Shared types (Zod), error classes, crypto, text chunker, constants
-  file-extract/  → Pluggable file text extraction (plain text, PDF, DOCX)
-```
-
-## Key Patterns
-
-- **Handler → Service → Repository**: API handlers validate + orchestrate, services contain business logic for external systems (Ollama, MinIO), repositories are data-access only
-- **User-scoped data**: Every repository method requires `userId` — data isolation is enforced at the DB layer, not just the API layer
-- **API resource routes**: `apps/web/app/routes/api/*.ts` are thin wrappers that delegate `request` objects to `@lanjam/api` handlers
-- **SSE streaming**: Chat and model-pull endpoints stream via Server-Sent Events (POST-based, parsed with ReadableStream on the client)
-- **Cookie auth**: httpOnly session cookie, token hashed with SHA-256, argon2id for passcodes
+- Real-time streaming chat with local LLMs (Llama, Gemma, Mistral, and more)
+- Voice input via Whisper speech-to-text
+- File attachments with text extraction (PDF, DOCX, TXT, Markdown)
+- Vector search (RAG) powered by pgvector for document-aware conversations
+- Conversation search, pinning, and auto-generated titles
+- Message editing with version history
+- Light, dark, and system theme support
+- Admin dashboard for managing users, models, and system settings
+- Support for remote Ollama instances on your local network
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Runtime | Node.js |
-| Package Manager | pnpm |
-| Monorepo | TurboRepo |
-| Web Framework | React Router 7 (SSR, Vite) |
-| Styling | Tailwind CSS v4, shadcn/ui patterns |
+| Frontend | React 19, React Router 7 (SSR), Tailwind CSS 4 |
+| API | Custom handler with SSE streaming |
+| Database | PostgreSQL 17 with pgvector |
 | ORM | Drizzle ORM |
-| Database | PostgreSQL 17 + pgvector |
-| Object Storage | MinIO |
-| LLM | Ollama (local) |
-| Linting/Formatting | Biome |
-| Language | TypeScript (strict) |
+| Object Storage | MinIO (S3-compatible) |
+| AI Runtime | Ollama |
+| Speech-to-Text | Faster Whisper Server |
+| Build | pnpm workspaces, TurboRepo |
+| Linting | Biome |
 
-## Commands
+## Project Structure
 
-```bash
-pnpm install          # Install all dependencies
-pnpm dev              # Start dev server (all workspaces)
-pnpm build            # Build all packages + app
-pnpm lint             # Lint with Biome
-pnpm format           # Format with Biome
-pnpm check            # Type-check all workspaces
-pnpm db:generate      # Generate Drizzle migrations
-pnpm db:migrate       # Run migrations
-pnpm db:push          # Push schema to DB (dev only)
+```
+lanjam-chat/
+├── apps/
+│   └── web/              # React Router frontend (SSR)
+├── packages/
+│   ├── api/              # API routes and request handling
+│   ├── db/               # Drizzle schema, migrations, repositories
+│   ├── file-extract/     # PDF/DOCX/TXT text extraction
+│   └── utils/            # Shared utilities
+├── docker-compose.yml    # PostgreSQL, MinIO, Whisper
+├── turbo.json
+└── package.json
 ```
 
-## Dev Setup
+## Prerequisites
 
-1. `docker compose up -d` — starts PostgreSQL + MinIO
-2. `pnpm install`
-3. Copy `.env.example` to `.env` and fill in values
-4. `pnpm db:migrate` — run migrations
-5. `pnpm dev` — start the app
-6. Visit `http://localhost:5173` — setup flow creates admin user
+- **Node.js** >= 22
+- **pnpm** 9.x
+- **Docker** and Docker Compose
+- **Ollama** installed locally or accessible on your network
+
+## Getting Started
+
+### 1. Clone and install
+
+```bash
+git clone https://github.com/lanjam-ai/lanjam-chat.git
+cd lanjam-chat
+pnpm install
+```
+
+### 2. Configure environment
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` to set your `SESSION_SECRET` to a random string (at least 32 characters). The defaults work out of the box for local development.
+
+### 3. Start infrastructure
+
+```bash
+pnpm docker:up
+```
+
+This starts PostgreSQL (with pgvector), MinIO, and Faster Whisper Server.
+
+### 4. Start Ollama
+
+```bash
+pnpm ollama:start
+```
+
+Or if Ollama is already running as a system service, skip this step.
+
+### 5. Set up the database
+
+```bash
+pnpm db:push
+```
+
+### 6. Start the dev server
+
+```bash
+pnpm dev
+```
+
+The app will be available at **http://localhost:5173**. The first user to sign up becomes the admin.
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start all workspaces in dev mode |
+| `pnpm build` | Build all workspaces |
+| `pnpm docker:up` | Start Docker services (Postgres, MinIO, Whisper) |
+| `pnpm docker:down` | Stop Docker services |
+| `pnpm ollama:start` | Start Ollama LLM server |
+| `pnpm db:generate` | Generate Drizzle migration files |
+| `pnpm db:migrate` | Run database migrations |
+| `pnpm db:push` | Push schema directly to database |
+| `pnpm format` | Format code with Biome |
+| `pnpm lint` | Lint code with Biome |
+| `pnpm check` | Format + lint with Biome |
 
 ## Environment Variables
 
-See `.env.example` for all variables. Key ones:
-- `DATABASE_URL` — PostgreSQL connection string
-- `MINIO_ENDPOINT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` — MinIO config
-- `OLLAMA_HOST` — Ollama API endpoint (default: http://localhost:11434)
-- `SESSION_SECRET` — Secret for session token generation
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://lanjam:lanjam@localhost:5432/lanjam` |
+| `MINIO_ENDPOINT` | MinIO host | `localhost` |
+| `MINIO_PORT` | MinIO API port | `9100` |
+| `MINIO_ACCESS_KEY` | MinIO access key | `minioadmin` |
+| `MINIO_SECRET_KEY` | MinIO secret key | `minioadmin` |
+| `MINIO_BUCKET` | MinIO bucket name | `family-chat` |
+| `OLLAMA_HOST` | Ollama API URL | `http://localhost:11434` |
+| `WHISPER_HOST` | Whisper API URL | `http://localhost:8000` |
+| `SESSION_SECRET` | Cookie signing secret | *(must be set)* |
+| `SESSION_DAYS` | Session expiry in days | `180` |
+| `MAX_UPLOAD_MB` | Max file upload size | `25` |
+| `ALLOWED_FILE_TYPES` | Comma-separated file extensions | `txt,md,pdf,docx` |
+| `ACTIVE_EMBEDDING_MODEL` | Ollama model for embeddings | `nomic-embed-text` |
 
-## File Organization
+## Architecture
 
-### packages/db
-- `src/schema/*.ts` — One file per table (11 tables total)
-- `src/repositories/*.ts` — One file per entity, all user-scoped
-- `src/client.ts` — DB connection factory
+```
+Handler → Service → Repository
+```
 
-### packages/api
-- `src/routes/*.ts` — One file per resource (setup, auth, users, conversations, messages, files, search, admin)
-- `src/services/*.ts` — Ollama, MinIO, embedding, rate-limiter
-- `src/middleware/*.ts` — Auth, cookie, validation
-- `src/handler.ts` — Router matching + error wrapper
+- **Handlers** validate requests and orchestrate responses
+- **Services** contain business logic for external systems (Ollama, MinIO, embeddings)
+- **Repositories** are data-access only, all user-scoped for data isolation
 
-### packages/utils
-- `src/types/*.ts` — Zod schemas + TypeScript interfaces
-- `src/errors.ts` — Error hierarchy (AppError → NotFound, Unauthorized, etc.)
-- `src/crypto.ts` — Passcode hashing + session tokens
-- `src/chunker.ts` — Text chunking for embeddings
+API resource routes in `apps/web/app/routes/api/` are thin wrappers that delegate to `@lanjam/api` handlers. Chat streaming uses Server-Sent Events over POST requests.
 
-### apps/web
-- `app/routes/api/*.ts` — API resource routes (thin wrappers)
-- `app/routes/*.tsx` — UI routes (setup, home, chat, settings)
-- `app/routes/admin/*.tsx` — Admin pages (status, users, LLM)
-- `app/hooks/*.ts` — React hooks (chat streaming, theme)
-- `app/server/*.ts` — Server-side singletons (DB, API handler)
+## Related Projects
 
-## Conventions
+- [lanjam-docs](https://github.com/lanjam-ai/lanjam-docs) — Help documentation package
+- [lanjam-site](https://github.com/lanjam-ai/lanjam-site) — Marketing website at [lanjam.dev](https://www.lanjam.dev)
 
-- Use Biome for formatting (2-space indent, 100 char width)
-- Use Biome for linting (recommended rules)
-- Imports sorted by Biome
-- All packages export from `src/index.ts`
-- Packages use `"exports": { ".": "./src/index.ts" }` for TS-first dev
-- Error responses always follow: `{ error: { code: string, message: string } }`
-- DB IDs are UUIDs (crypto.randomUUID)
-- Timestamps use `new Date()` (stored as timestamptz)
+## Licence
+
+MIT
