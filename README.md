@@ -1,6 +1,6 @@
 # LanJAM
 
-A free, open-source, self-hosted AI chat application designed for families. Run your own private ChatGPT-like experience on your local network — no cloud services, no subscriptions, no data leaving your home.
+A free, open-source, self-hosted AI chat application designed for families. Run your own private AI chat experience on your local network — no cloud services, no subscriptions, no data leaving your home.
 
 ## Why LanJAM?
 
