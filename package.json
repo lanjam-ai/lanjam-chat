@@ -1,0 +1,26 @@
+{
+  "name": "lanjam",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
+    "db:generate": "turbo db:generate --filter=@lanjam/db",
+    "db:migrate": "turbo db:migrate --filter=@lanjam/db",
+    "db:push": "turbo db:push --filter=@lanjam/db",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "ollama:start": "ollama serve"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.3"
+  },
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=22"
+  }
+}

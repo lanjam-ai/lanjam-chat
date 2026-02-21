@@ -1,0 +1,107 @@
+import { type RouteConfig, index, layout, prefix, route } from "@react-router/dev/routes";
+
+export default [
+  // API resource routes
+  ...prefix("api", [
+    route("status", "routes/api/status.ts"),
+    route("setup/status", "routes/api/setup.status.ts"),
+    route("setup/create-admin", "routes/api/setup.create-admin.ts"),
+    route("users/public", "routes/api/users.public.ts"),
+    route("auth/login", "routes/api/auth.login.ts"),
+    route("auth/logout", "routes/api/auth.logout.ts"),
+    route("auth/me", "routes/api/auth.me.ts"),
+    route("me", "routes/api/me.ts"),
+    route("conversations", "routes/api/conversations.ts"),
+    route("conversations/:id", "routes/api/conversations.$id.ts"),
+    route("conversations/:id/messages", "routes/api/conversations.$id.messages.ts"),
+    route(
+      "conversations/:id/messages/undo-last",
+      "routes/api/conversations.$id.messages.undo-last.ts",
+    ),
+    route(
+      "conversations/:id/messages/delete-last-exchange",
+      "routes/api/conversations.$id.messages.delete-last-exchange.ts",
+    ),
+    route(
+      "conversations/:id/messages/save-cancelled",
+      "routes/api/conversations.$id.messages.save-cancelled.ts",
+    ),
+    route(
+      "conversations/:id/messages/:messageId",
+      "routes/api/conversations.$id.messages.$messageId.ts",
+    ),
+    route("conversations/:id/generate-title", "routes/api/conversations.$id.generate-title.ts"),
+    route("conversations/:id/files", "routes/api/conversations.$id.files.ts"),
+    route(
+      "conversations/:id/files/:fileId/link",
+      "routes/api/conversations.$id.files.$fileId.link.ts",
+    ),
+    route("conversations/:id/files/:fileId", "routes/api/conversations.$id.files.$fileId.ts"),
+    route("tags", "routes/api/tags.ts"),
+    route("tags/:tagId", "routes/api/tags.$tagId.ts"),
+    route("conversations/:id/tags", "routes/api/conversations.$id.tags.ts"),
+    route("groups", "routes/api/groups.ts"),
+    route("groups/:groupId", "routes/api/groups.$groupId.ts"),
+    route("models", "routes/api/models.ts"),
+    route("models/:modelId/acknowledge", "routes/api/models.$modelId.acknowledge.ts"),
+    route("files", "routes/api/files.ts"),
+    route("files/:fileId/download", "routes/api/files.$fileId.download.ts"),
+    route("files/:fileId", "routes/api/files.$fileId.ts"),
+    route("search/conversations", "routes/api/search.conversations.ts"),
+    route("transcribe", "routes/api/transcribe.ts"),
+    route("admin/status", "routes/api/admin.status.ts"),
+    route("admin/users", "routes/api/admin.users.ts"),
+    route("admin/users/:id", "routes/api/admin.users.$id.ts"),
+    route("admin/llm/models", "routes/api/admin.llm.models.ts"),
+    route("admin/llm/models/access", "routes/api/admin.llm.models.access.ts"),
+    route("admin/llm/pull", "routes/api/admin.llm.pull.ts"),
+    route("admin/llm/active", "routes/api/admin.llm.active.ts"),
+    route("admin/llm/remote/test", "routes/api/admin.llm.remote.test.ts"),
+    route("admin/llm/remote/connect", "routes/api/admin.llm.remote.connect.ts"),
+    route("admin/llm/remote/disconnect", "routes/api/admin.llm.remote.disconnect.ts"),
+    route("admin/ollama/start", "routes/api/admin.ollama.start.ts"),
+    route("admin/system/reset", "routes/api/admin.system.reset.ts"),
+    route("admin/safety/rules", "routes/api/admin.safety.rules.ts"),
+    route("admin/safety/rules/:type", "routes/api/admin.safety.rules.$type.ts"),
+    route("admin/safety/rules/:type/revert", "routes/api/admin.safety.rules.$type.revert.ts"),
+    route("admin/safety/rules/:type/reset", "routes/api/admin.safety.rules.$type.reset.ts"),
+    route("admin/owner/initialize", "routes/api/admin.owner.initialize.ts"),
+    route(
+      "admin/owner/regenerate-recovery-key",
+      "routes/api/admin.owner.regenerate-recovery-key.ts",
+    ),
+    route("owner/status", "routes/api/owner.status.ts"),
+    route("owner/login", "routes/api/owner.login.ts"),
+    route("owner/logout", "routes/api/owner.logout.ts"),
+    route("owner/me", "routes/api/owner.me.ts"),
+    route("owner/recover", "routes/api/owner.recover.ts"),
+    route("owner/users", "routes/api/owner.users.ts"),
+    route("owner/users/:id/reset-passcode", "routes/api/owner.users.$id.reset-passcode.ts"),
+    route("owner/system-reset", "routes/api/owner.system-reset.ts"),
+    route("owner/audit-log", "routes/api/owner.audit-log.ts"),
+  ]),
+
+  // UI routes (unauthenticated)
+  index("routes/home.tsx"),
+  route("setup", "routes/setup.tsx"),
+
+  // Owner recovery console (separate from normal app)
+  layout("routes/owner/layout.tsx", [
+    route("owner", "routes/owner/index.tsx"),
+    route("owner/recover", "routes/owner/recover.tsx"),
+    route("owner/console", "routes/owner/console.tsx"),
+  ]),
+
+  // UI routes (authenticated — wrapped in layout with global header)
+  layout("routes/authenticated-layout.tsx", [
+    route("chats", "routes/chats.tsx"),
+    route("chats/:conversationId", "routes/chats.$conversationId.tsx"),
+    route("settings", "routes/settings.tsx"),
+    route("admin", "routes/admin/index.tsx"),
+    route("admin/users", "routes/admin/users.tsx"),
+    route("admin/llm", "routes/admin/llm.tsx"),
+    route("admin/safety", "routes/admin/safety.tsx"),
+    route("help", "routes/help.tsx"),
+    route("help/:slug", "routes/help.$slug.tsx"),
+  ]),
+] satisfies RouteConfig;

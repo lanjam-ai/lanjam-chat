@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "moduleDetection": "force",
+    "noEmit": true,
+    "paths": {
+      "~/*": ["./app/*"]
+    },
+    "rootDirs": [".", "./.react-router/types"]
+  },
+  "include": ["app/**/*.ts", "app/**/*.tsx", ".react-router/types/**/*.ts", "env.d.ts"],
+  "exclude": ["node_modules", "dist", "build"]
+}

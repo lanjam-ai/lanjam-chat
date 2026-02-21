@@ -1,0 +1,62 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1771236710209,
+      "tag": "0000_clammy_red_shift",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1771350000000,
+      "tag": "0001_add_messages_search_tsv",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771400000000,
+      "tag": "0002_add_llm_models_host",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1771500000000,
+      "tag": "0003_add_model_selection",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1771600000000,
+      "tag": "0004_add_message_versioning",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1771700000000,
+      "tag": "0005_add_user_model_acknowledgments",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1771800000000,
+      "tag": "0006_add_group_guidance_and_tag_constraints",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1771900000000,
+      "tag": "0007_add_owner_account",
+      "breakpoints": true
+    }
+  ]
+}

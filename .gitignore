@@ -1,0 +1,31 @@
+node_modules/
+dist/
+.turbo/
+.react-router/
+*.tsbuildinfo
+
+# Web builds (React Router/Vite)
+apps/**/build/
+apps/**/.react-router/
+
+# Common outputs
+coverage/
+*.log
+
+# Environment
+.env
+.env.*.local
+.env.local
+
+# Drizzle
+drizzle/meta/
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Claude
+.claude/

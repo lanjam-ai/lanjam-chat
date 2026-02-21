@@ -1,0 +1,10 @@
+node_modules
+.git
+*.log
+apps/web/build
+packages/stack/README.md
+packages/stack/scripts
+packages/stack/installer
+.env
+.env.*
+!.env.example
