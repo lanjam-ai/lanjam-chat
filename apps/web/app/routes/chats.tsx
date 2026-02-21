@@ -76,7 +76,6 @@ interface AuthUser {
   ui_theme: string;
 }
 
-
 type ScopeMode = "none" | "topic";
 
 function escapeHtml(str: string): string {

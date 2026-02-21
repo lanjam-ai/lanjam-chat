@@ -113,6 +113,20 @@ function LayoutShell() {
           >
             <CircleHelp className="h-4 w-4" />
           </Link>
+          <button
+            type="button"
+            onClick={cycleTheme}
+            className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+            title={`Theme: ${theme}`}
+          >
+            {theme === "light" ? (
+              <Sun className="h-4 w-4" />
+            ) : theme === "dark" ? (
+              <Moon className="h-4 w-4" />
+            ) : (
+              <Monitor className="h-4 w-4" />
+            )}
+          </button>
           <div className="relative" ref={dropdownRef}>
             <button
               type="button"

@@ -101,7 +101,11 @@ export async function undoLastMessage(request: Request, ctx: ApiContext, convers
   return Response.json({ ok: true });
 }
 
-export async function deleteLastExchange(request: Request, ctx: ApiContext, conversationId: string) {
+export async function deleteLastExchange(
+  request: Request,
+  ctx: ApiContext,
+  conversationId: string,
+) {
   const authCtx = await requireAuth(request, ctx);
   const deleted = await ctx.repos.messages.deleteLastExchange(authCtx.userId, conversationId);
   if (deleted === null) {
@@ -470,7 +474,11 @@ export async function sendMessage(request: Request, ctx: ApiContext, conversatio
             role: "assistant",
             content: fullContent,
             llm_model_id: modelId,
-            metadata: { status: "error", error: message, ...(responseMetadata as Record<string, unknown> ?? {}) },
+            metadata: {
+              status: "error",
+              error: message,
+              ...((responseMetadata as Record<string, unknown>) ?? {}),
+            },
             version_group_id: versionGroupId,
             version_number: versionNumber,
           });

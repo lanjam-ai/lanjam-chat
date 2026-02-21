@@ -86,7 +86,11 @@ function PreBlock(props: React.HTMLAttributes<HTMLPreElement>) {
           title={copied ? "Copied!" : "Copy code"}
           className="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-gray-400 backdrop-blur-sm transition-colors cursor-pointer hover:bg-white/20 hover:text-white"
         >
-          {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+          {copied ? (
+            <Check className="h-3.5 w-3.5 text-emerald-400" />
+          ) : (
+            <Copy className="h-3.5 w-3.5" />
+          )}
         </span>
       </div>
     </div>

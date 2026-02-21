@@ -67,7 +67,11 @@ const routes: Route[] = [
   route("GET", "/api/conversations/:id/messages", messages.listMessages),
   route("POST", "/api/conversations/:id/messages", messages.sendMessage),
   route("POST", "/api/conversations/:id/messages/undo-last", messages.undoLastMessage),
-  route("POST", "/api/conversations/:id/messages/delete-last-exchange", messages.deleteLastExchange),
+  route(
+    "POST",
+    "/api/conversations/:id/messages/delete-last-exchange",
+    messages.deleteLastExchange,
+  ),
   route("POST", "/api/conversations/:id/messages/save-cancelled", messages.saveCancelledMessage),
   route("DELETE", "/api/conversations/:id/messages/:messageId", messages.deleteMessage),
   route("POST", "/api/conversations/:id/generate-title", messages.generateTitle),

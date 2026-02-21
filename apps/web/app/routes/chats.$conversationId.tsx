@@ -83,7 +83,11 @@ function PreBlock(props: React.HTMLAttributes<HTMLPreElement>) {
           title={copied ? "Copied!" : "Copy code"}
           className="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-gray-400 backdrop-blur-sm transition-colors cursor-pointer hover:bg-white/20 hover:text-white"
         >
-          {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+          {copied ? (
+            <Check className="h-3.5 w-3.5 text-emerald-400" />
+          ) : (
+            <Copy className="h-3.5 w-3.5" />
+          )}
         </span>
       </div>
     </div>
@@ -134,8 +138,6 @@ interface Message {
   /** Version number within the group */
   version_number?: number;
 }
-
-
 
 interface AuthUser {
   id: string;
@@ -1117,18 +1119,15 @@ export default function ConversationPage() {
 
         // Persist cancelled message to DB
         try {
-          const res = await fetch(
-            `/api/conversations/${conversation.id}/messages/save-cancelled`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                content: accumulated,
-                ...(optimisticVersionGroupId ? { versionGroupId: optimisticVersionGroupId } : {}),
-                ...(optimisticVersionNumber ? { versionNumber: optimisticVersionNumber } : {}),
-              }),
-            },
-          );
+          const res = await fetch(`/api/conversations/${conversation.id}/messages/save-cancelled`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              content: accumulated,
+              ...(optimisticVersionGroupId ? { versionGroupId: optimisticVersionGroupId } : {}),
+              ...(optimisticVersionNumber ? { versionNumber: optimisticVersionNumber } : {}),
+            }),
+          });
           if (res.ok) {
             const data = await res.json();
             if (data.messageId) {
@@ -1229,7 +1228,10 @@ export default function ConversationPage() {
     // Find the last user message in visibleMessages
     let lastUserIdx = -1;
     for (let i = visibleMessages.length - 1; i >= 0; i--) {
-      if (visibleMessages[i].role === "user") { lastUserIdx = i; break; }
+      if (visibleMessages[i].role === "user") {
+        lastUserIdx = i;
+        break;
+      }
     }
     if (lastUserIdx < 0) return;
     const lastUserMsg = visibleMessages[lastUserIdx];
@@ -1289,10 +1291,9 @@ export default function ConversationPage() {
     setMessages((prev) => prev.filter((m) => m.id !== msgId));
 
     try {
-      const res = await fetch(
-        `/api/conversations/${conversation.id}/messages/${msgId}`,
-        { method: "DELETE" },
-      );
+      const res = await fetch(`/api/conversations/${conversation.id}/messages/${msgId}`, {
+        method: "DELETE",
+      });
       if (!res.ok) {
         setMessages(backup);
       }
@@ -1915,10 +1916,10 @@ export default function ConversationPage() {
                         const msgIdx = visibleMessages.indexOf(msg);
                         if (msgIdx < 0) return null;
                         const nextMsg =
-                          msgIdx + 1 < visibleMessages.length
-                            ? visibleMessages[msgIdx + 1]
-                            : null;
-                        const hasLaterUser = visibleMessages.slice(msgIdx + 1).some((m) => m.role === "user");
+                          msgIdx + 1 < visibleMessages.length ? visibleMessages[msgIdx + 1] : null;
+                        const hasLaterUser = visibleMessages
+                          .slice(msgIdx + 1)
+                          .some((m) => m.role === "user");
 
                         // Case 1 & 2: Last user message (with or without assistant response)
                         if (!hasLaterUser) {
@@ -2134,40 +2135,42 @@ export default function ConversationPage() {
                         </>
                       )}
                     </button>
-                    {expandedMetadata.has(msg.id) && msg.metadata && msg.metadata.eval_count != null && (
-                      <div className="hidden sm:block mt-1.5 rounded-md border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground space-y-1">
-                        {msg.model?.name && (
+                    {expandedMetadata.has(msg.id) &&
+                      msg.metadata &&
+                      msg.metadata.eval_count != null && (
+                        <div className="hidden sm:block mt-1.5 rounded-md border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground space-y-1">
+                          {msg.model?.name && (
+                            <div className="flex justify-between">
+                              <span>Model</span>
+                              <span className="font-medium">{msg.model.name}</span>
+                            </div>
+                          )}
                           <div className="flex justify-between">
-                            <span>Model</span>
-                            <span className="font-medium">{msg.model.name}</span>
+                            <span>Prompt tokens</span>
+                            <span className="font-medium">{msg.metadata.prompt_eval_count}</span>
                           </div>
-                        )}
-                        <div className="flex justify-between">
-                          <span>Prompt tokens</span>
-                          <span className="font-medium">{msg.metadata.prompt_eval_count}</span>
+                          <div className="flex justify-between">
+                            <span>Response tokens</span>
+                            <span className="font-medium">{msg.metadata.eval_count}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Duration</span>
+                            <span className="font-medium">
+                              {formatDuration(msg.metadata.eval_duration_ns!)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Speed</span>
+                            <span className="font-medium">
+                              {formatTokenSpeed(
+                                msg.metadata.eval_count!,
+                                msg.metadata.eval_duration_ns!,
+                              )}{" "}
+                              tokens/sec
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex justify-between">
-                          <span>Response tokens</span>
-                          <span className="font-medium">{msg.metadata.eval_count}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Duration</span>
-                          <span className="font-medium">
-                            {formatDuration(msg.metadata.eval_duration_ns!)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Speed</span>
-                          <span className="font-medium">
-                            {formatTokenSpeed(
-                              msg.metadata.eval_count!,
-                              msg.metadata.eval_duration_ns!,
-                            )}{" "}
-                            tokens/sec
-                          </span>
-                        </div>
-                      </div>
-                    )}
+                      )}
                   </div>
                 )}
               </div>
@@ -2184,7 +2187,9 @@ export default function ConversationPage() {
                 <p className="text-xs font-medium text-muted-foreground">Assistant</p>
                 <div className="prose prose-sm max-w-none dark:prose-invert">
                   {streamContent ? (
-                    <Markdown remarkPlugins={[remarkGfm]} components={chatMarkdownComponents}>{streamContent}</Markdown>
+                    <Markdown remarkPlugins={[remarkGfm]} components={chatMarkdownComponents}>
+                      {streamContent}
+                    </Markdown>
                   ) : (
                     <span className="inline-flex items-center gap-1.5 text-muted-foreground">
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />

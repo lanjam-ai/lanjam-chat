@@ -1,4 +1,3 @@
-import { Check, Monitor, Moon, Sun } from "lucide-react";
 import { useState } from "react";
 import { useLoaderData } from "react-router";
 import { callApi } from "~/server/api.js";
@@ -19,7 +18,6 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function SettingsPage() {
   const { user } = useLoaderData<typeof loader>();
 
-  const [theme, setTheme] = useState<string>(user.ui_theme ?? "system");
   const [safeModeEnabled, setSafeModeEnabled] = useState(user.safe_mode_enabled ?? false);
   const [passcode, setPasscode] = useState("");
   const [confirmPasscode, setConfirmPasscode] = useState("");
@@ -32,26 +30,6 @@ export default function SettingsPage() {
   const [savingName, setSavingName] = useState(false);
   const [nameMessage, setNameMessage] = useState("");
   const [nameError, setNameError] = useState("");
-
-  async function handleThemeChange(newTheme: string) {
-    setTheme(newTheme);
-    // Apply immediately
-    if (typeof document !== "undefined") {
-      const resolved =
-        newTheme === "system"
-          ? window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light"
-          : newTheme;
-      document.documentElement.classList.toggle("dark", resolved === "dark");
-    }
-
-    await fetch("/api/me", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ui_theme: newTheme }),
-    });
-  }
 
   async function handleNameSave() {
     const trimmed = name.trim();
@@ -118,12 +96,6 @@ export default function SettingsPage() {
     }
   }
 
-  const themes = [
-    { value: "light", label: "Light", icon: Sun },
-    { value: "dark", label: "Dark", icon: Moon },
-    { value: "system", label: "System", icon: Monitor },
-  ];
-
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-2xl px-4 py-8">
@@ -163,28 +135,6 @@ export default function SettingsPage() {
             {nameMessage && (
               <p className="mt-2 text-sm text-green-600 dark:text-green-400">{nameMessage}</p>
             )}
-          </div>
-        </section>
-
-        {/* Theme */}
-        <section className="mb-8">
-          <h2 className="mb-4 text-lg font-semibold">Appearance</h2>
-          <div className="grid grid-cols-3 gap-3">
-            {themes.map(({ value, label, icon: Icon }) => (
-              <button
-                key={value}
-                onClick={() => handleThemeChange(value)}
-                className={`flex flex-col items-center gap-2 rounded-lg border p-4 transition-colors ${
-                  theme === value
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/50"
-                }`}
-              >
-                <Icon className="h-6 w-6" />
-                <span className="text-sm font-medium">{label}</span>
-                {theme === value && <Check className="h-4 w-4 text-primary" />}
-              </button>
-            ))}
           </div>
         </section>
 

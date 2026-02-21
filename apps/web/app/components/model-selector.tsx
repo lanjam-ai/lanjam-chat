@@ -43,11 +43,11 @@ export function ModelSelector({ models, selected, onSelect, disabled }: ModelSel
           ) : (
             <Zap className="h-3 w-3" />
           )}
-          <span className="max-w-[120px] truncate">
-            {selected?.name ?? "Select model"}
-          </span>
+          <span className="max-w-[120px] truncate">{selected?.name ?? "Select model"}</span>
           {selected?.host && (
-            <span className="rounded bg-blue-500/10 px-1 py-px text-[9px] font-medium text-blue-500">Remote</span>
+            <span className="rounded bg-blue-500/10 px-1 py-px text-[9px] font-medium text-blue-500">
+              Remote
+            </span>
           )}
           <ChevronDown className="h-3 w-3" />
         </button>
@@ -65,18 +65,14 @@ export function ModelSelector({ models, selected, onSelect, disabled }: ModelSel
                   selected?.id === m.id ? "bg-accent/50 font-medium" : ""
                 }`}
               >
-                {m.host ? (
-                  <Globe className="h-3 w-3 text-blue-500" />
-                ) : (
-                  <Zap className="h-3 w-3" />
-                )}
+                {m.host ? <Globe className="h-3 w-3 text-blue-500" /> : <Zap className="h-3 w-3" />}
                 <span className="truncate">{m.name}</span>
                 {m.host && (
-                  <span className="rounded bg-blue-500/10 px-1 py-px text-[9px] font-medium text-blue-500">Remote</span>
+                  <span className="rounded bg-blue-500/10 px-1 py-px text-[9px] font-medium text-blue-500">
+                    Remote
+                  </span>
                 )}
-                {selected?.id === m.id && (
-                  <Check className="h-3 w-3 ml-auto text-primary" />
-                )}
+                {selected?.id === m.id && <Check className="h-3 w-3 ml-auto text-primary" />}
               </button>
             ))}
           </div>
@@ -88,14 +84,12 @@ export function ModelSelector({ models, selected, onSelect, disabled }: ModelSel
   if (models.length === 1) {
     return (
       <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/60 ml-1 px-1">
-        {models[0].host ? (
-          <Globe className="h-3 w-3 text-blue-500" />
-        ) : (
-          <Zap className="h-3 w-3" />
-        )}
+        {models[0].host ? <Globe className="h-3 w-3 text-blue-500" /> : <Zap className="h-3 w-3" />}
         <span className="max-w-[120px] truncate">{models[0].name}</span>
         {models[0].host && (
-          <span className="rounded bg-blue-500/10 px-1 py-px text-[9px] font-medium text-blue-500">Remote</span>
+          <span className="rounded bg-blue-500/10 px-1 py-px text-[9px] font-medium text-blue-500">
+            Remote
+          </span>
         )}
       </span>
     );
