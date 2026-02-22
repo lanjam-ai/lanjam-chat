@@ -156,7 +156,7 @@ function LayoutShell() {
                   className="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-accent"
                 >
                   <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                  My Conversations
+                  My Chats
                 </Link>
                 <div className="my-1 border-t border-border" />
                 <Link

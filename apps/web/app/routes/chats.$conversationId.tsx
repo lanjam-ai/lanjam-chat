@@ -349,6 +349,7 @@ export default function ConversationPage() {
   const [streamStatus, setStreamStatus] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDeleteExchangeConfirm, setShowDeleteExchangeConfirm] = useState(false);
+  const [showDeleteLastChatConfirm, setShowDeleteLastChatConfirm] = useState(false);
   const [orphanDeleteMessageId, setOrphanDeleteMessageId] = useState<string | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [showSafeModeModal, setShowSafeModeModal] = useState<"disable" | "cannot-enable" | null>(
@@ -1219,7 +1220,13 @@ export default function ConversationPage() {
   }
 
   function handleDeleteLastExchange() {
-    setShowDeleteExchangeConfirm(true);
+    // Check if this is the only user message — deleting it means deleting the conversation
+    const userMessageCount = visibleMessages.filter((m) => m.role === "user").length;
+    if (userMessageCount <= 1) {
+      setShowDeleteLastChatConfirm(true);
+    } else {
+      setShowDeleteExchangeConfirm(true);
+    }
   }
 
   async function confirmDeleteLastExchange() {
@@ -1277,8 +1284,19 @@ export default function ConversationPage() {
     }
   }
 
+  async function confirmDeleteLastChat() {
+    setShowDeleteLastChatConfirm(false);
+    await fetch(`/api/conversations/${conversation.id}`, { method: "DELETE" });
+    navigate("/chats");
+  }
+
   function handleDeleteOrphanMessage(msgId: string) {
-    setOrphanDeleteMessageId(msgId);
+    const userMessageCount = visibleMessages.filter((m) => m.role === "user").length;
+    if (userMessageCount <= 1) {
+      setShowDeleteLastChatConfirm(true);
+    } else {
+      setOrphanDeleteMessageId(msgId);
+    }
   }
 
   async function confirmDeleteOrphanMessage() {
@@ -1532,7 +1550,7 @@ export default function ConversationPage() {
         <header className="flex items-center gap-3 border-b border-border px-4 py-3">
           <div className="flex flex-1 items-center gap-2 min-w-0">
             <h1 className="text-lg font-semibold truncate">
-              {conversation.title || "New Conversation"}
+              {conversation.title || "New Chat"}
             </h1>
             <button
               type="button"
@@ -1799,7 +1817,7 @@ export default function ConversationPage() {
                     e.shiftKey ? goToPrevMatch() : goToNextMatch();
                   }
                 }}
-                placeholder="Search in conversation..."
+                placeholder="Search in chat..."
                 className="h-8 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
@@ -1845,7 +1863,7 @@ export default function ConversationPage() {
         <div className="flex items-center gap-3 border-b border-amber-500/30 bg-amber-500/10 px-4 py-2.5">
           <Archive className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
           <span className="flex-1 text-sm text-amber-700 dark:text-amber-300">
-            This conversation is archived and read-only.
+            This chat is archived and read-only.
           </span>
           <button
             type="button"
@@ -1863,7 +1881,7 @@ export default function ConversationPage() {
           {messages.length === 0 && !isStreaming && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <Bot className="h-12 w-12 text-muted-foreground/50 mb-4" />
-              <h3 className="text-lg font-medium">Start a conversation</h3>
+              <h3 className="text-lg font-medium">Start a chat</h3>
               <p className="mt-1 text-sm text-muted-foreground">Type a message to begin chatting</p>
             </div>
           )}
@@ -2401,7 +2419,7 @@ export default function ConversationPage() {
       {/* Title edit modal */}
       <TitleEditModal
         open={showTitleModal}
-        currentTitle={conversation.title || "New Conversation"}
+        currentTitle={conversation.title || "New Chat"}
         conversationId={conversation.id}
         onSave={handleTitleSave}
         onCancel={() => setShowTitleModal(false)}
@@ -2429,7 +2447,7 @@ export default function ConversationPage() {
               <h2 className="font-semibold">Disable Safe Mode</h2>
             </div>
             <p className="mb-6 text-sm text-muted-foreground">
-              This will remove content safety protections for the rest of this conversation. This
+              This will remove content safety protections for the rest of this chat. This
               cannot be undone — Safe Mode cannot be re-enabled once disabled.
             </p>
             <div className="flex gap-2 justify-end">
@@ -2462,8 +2480,8 @@ export default function ConversationPage() {
               <h2 className="font-semibold">Cannot Enable Safe Mode</h2>
             </div>
             <p className="mb-6 text-sm text-muted-foreground">
-              Safe Mode can only be enabled on new conversations before any messages are sent.
-              Existing conversations cannot be guaranteed to be safe.
+              Safe Mode can only be enabled on new chats before any messages are sent.
+              Existing chats cannot be guaranteed to be safe.
             </p>
             <div className="flex gap-2 justify-end">
               <button
@@ -2489,8 +2507,8 @@ export default function ConversationPage() {
       {/* Delete confirmation */}
       <ConfirmModal
         open={showDeleteConfirm}
-        title="Delete Conversation"
-        message="Are you sure you want to delete this conversation? All messages and linked files will be removed. This cannot be undone."
+        title="Delete Chat"
+        message="Are you sure you want to delete this chat? All messages and linked files will be removed. This cannot be undone."
         confirmLabel="Delete"
         cancelLabel="Cancel"
         variant="danger"
@@ -2520,6 +2538,18 @@ export default function ConversationPage() {
         variant="danger"
         onConfirm={confirmDeleteOrphanMessage}
         onCancel={() => setOrphanDeleteMessageId(null)}
+      />
+
+      {/* Delete last message = delete chat confirmation */}
+      <ConfirmModal
+        open={showDeleteLastChatConfirm}
+        title="Delete Chat"
+        message="This is the only message in this chat. Deleting it will delete the entire chat."
+        confirmLabel="Delete Chat"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={confirmDeleteLastChat}
+        onCancel={() => setShowDeleteLastChatConfirm(false)}
       />
 
       {/* Voice recording overlay */}

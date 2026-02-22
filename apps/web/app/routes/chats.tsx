@@ -35,7 +35,7 @@ import { callApi } from "~/server/api.js";
 import type { Route } from "./+types/chats";
 
 export function meta() {
-  return [{ title: "Conversations - LanJAM" }];
+  return [{ title: "Chats - LanJAM" }];
 }
 
 interface ConversationTag {
@@ -692,11 +692,11 @@ export default function ChatsPage() {
             <div className="mb-3 flex items-center gap-3 rounded-md border border-amber-500/30 bg-amber-500/10 px-4 py-3">
               <Archive className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
               <h2 className="text-lg font-semibold text-amber-700 dark:text-amber-300">
-                Archived Conversations
+                Archived Chats
               </h2>
             </div>
           ) : (
-            <h2 className="mb-3 text-lg font-semibold">Conversations</h2>
+            <h2 className="mb-3 text-lg font-semibold">Chats</h2>
           )}
 
           {/* Top bar: [Search...] [Topic] [Filter] [Edit] */}
@@ -707,7 +707,7 @@ export default function ChatsPage() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={isArchivedView ? "Search archived..." : "Search conversations..."}
+                placeholder={isArchivedView ? "Search archived..." : "Search chats..."}
                 className="flex h-9 w-full rounded-md border border-input bg-background pl-9 pr-8 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
               {search && (
@@ -929,7 +929,7 @@ export default function ChatsPage() {
                     <div className="flex items-center gap-3">
                       <MessageSquare className="h-4 w-4 shrink-0 text-muted-foreground" />
                       <span className="flex-1 truncate text-sm font-medium">
-                        {result.title || "New Conversation"}
+                        {result.title || "New Chat"}
                       </span>
                       <span className="shrink-0 text-xs text-muted-foreground">
                         {formatRelativeTime(result.updated_at)}
@@ -952,12 +952,12 @@ export default function ChatsPage() {
               <MessageSquare className="h-10 w-10 text-muted-foreground/40 mb-3" />
               <p className="text-sm text-muted-foreground">
                 {isArchivedView
-                  ? "No archived conversations"
+                  ? "No archived chats"
                   : isFiltering
-                    ? "No conversations match the current filters"
+                    ? "No chats match the current filters"
                     : scope === "topic" && activeTopic
-                      ? `No conversations in "${activeTopic.name}" yet`
-                      : "No conversations yet"}
+                      ? `No chats in "${activeTopic.name}" yet`
+                      : "No chats yet"}
               </p>
             </div>
           ) : (
@@ -981,7 +981,7 @@ export default function ChatsPage() {
                         <MessageSquare className="h-4 w-4 shrink-0 text-muted-foreground" />
                       )}
                       <span className="flex-1 truncate text-sm font-medium">
-                        {conv.title || "New Conversation"}
+                        {conv.title || "New Chat"}
                       </span>
                       <span className="shrink-0 text-xs text-muted-foreground">
                         {formatRelativeTime(conv.updated_at)}
@@ -1228,8 +1228,8 @@ export default function ChatsPage() {
       {/* Bulk delete confirmation */}
       <ConfirmModal
         open={showBulkDeleteConfirm}
-        title="Delete Conversations"
-        message={`${selectedIds.size} conversation${selectedIds.size > 1 ? "s" : ""} will be deleted. This cannot be undone.`}
+        title="Delete Chats"
+        message={`${selectedIds.size} chat${selectedIds.size > 1 ? "s" : ""} will be deleted. This cannot be undone.`}
         confirmLabel={bulkDeleting ? "Deleting..." : "Delete"}
         cancelLabel="Cancel"
         variant="danger"

@@ -378,7 +378,7 @@ export default function OwnerConsolePage() {
               <div className="flex-1">
                 <h3 className="font-semibold">System Reset</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  This will permanently delete all users, conversations, messages, files, and
+                  This will permanently delete all users, chats, messages, files, and
                   settings. The system will return to the initial setup state. The owner account
                   will be preserved.
                 </p>
@@ -457,7 +457,7 @@ export default function OwnerConsolePage() {
               <p>This action is irreversible. The following will be permanently deleted:</p>
               <ul className="list-inside list-disc space-y-1">
                 <li>All user accounts and sessions</li>
-                <li>All conversations and messages</li>
+                <li>All chats and messages</li>
                 <li>All uploaded files and extracted content</li>
                 <li>All embeddings and search indexes</li>
                 <li>All LLM model configuration</li>
