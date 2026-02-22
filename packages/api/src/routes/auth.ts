@@ -67,6 +67,7 @@ export async function login(request: Request, ctx: ApiContext) {
   return new Response(
     JSON.stringify({
       user: { id: user.id, name: user.name, role: user.role, ui_theme: user.ui_theme },
+      token,
     }),
     {
       headers: {
