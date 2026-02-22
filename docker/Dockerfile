@@ -3,13 +3,16 @@ RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 
 FROM base AS deps
 WORKDIR /app
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
 COPY apps/web/package.json apps/web/
 COPY packages/api/package.json packages/api/
 COPY packages/db/package.json packages/db/
 COPY packages/utils/package.json packages/utils/
 COPY packages/file-extract/package.json packages/file-extract/
-RUN pnpm install --frozen-lockfile
+RUN --mount=type=secret,id=gh_token \
+    echo "//npm.pkg.github.com/:_authToken=$(cat /run/secrets/gh_token)" >> .npmrc \
+    && pnpm install --frozen-lockfile \
+    && sed -i '/^\/\/npm.pkg.github.com/d' .npmrc
 
 FROM base AS build
 WORKDIR /app
