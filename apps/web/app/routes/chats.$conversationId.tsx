@@ -1722,7 +1722,7 @@ export default function ConversationPage() {
                         }
                       }}
                       placeholder="New tag..."
-                      className="flex-1 h-7 rounded border border-input bg-background px-2 text-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      className="flex-1 h-7 rounded border border-input bg-background px-2 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     />
                     <button
                       type="button"
@@ -1818,7 +1818,7 @@ export default function ConversationPage() {
                   }
                 }}
                 placeholder="Search in chat..."
-                className="h-8 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-8 w-full rounded-md border border-input bg-background pl-9 pr-3 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
             <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
@@ -2346,7 +2346,7 @@ export default function ConversationPage() {
                 disabled={isStreaming || noModelsAvailable}
                 placeholder="Type a message..."
                 rows={1}
-                className="w-full min-h-[36px] md:min-h-[76px] resize-none overflow-hidden border-0 bg-transparent px-4 pt-3 pb-1 text-sm placeholder:text-muted-foreground focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full min-h-[36px] md:min-h-[76px] resize-none overflow-hidden border-0 bg-transparent px-4 pt-3 pb-1 text-base placeholder:text-muted-foreground focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <div className="flex items-center justify-between px-3 py-2">
                 <div

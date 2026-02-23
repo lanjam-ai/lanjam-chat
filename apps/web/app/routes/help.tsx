@@ -78,7 +78,7 @@ export default function HelpPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search help articles..."
-            className="h-11 w-full rounded-lg border border-input bg-background pl-10 pr-10 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+            className="h-11 w-full rounded-lg border border-input bg-background pl-10 pr-10 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
           />
           {query && (
             <button

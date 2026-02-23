@@ -31,7 +31,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const meRes = await callApi(request, "/api/auth/me");
   const { user: me } = await meRes.json();
   if (me.role !== "admin") {
-    throw new Response(null, { status: 302, headers: { Location: "/chats" } });
+    throw new Response(null, { status: 302, headers: { Location: "/chats?notice=no-permission" } });
   }
 
   const usersRes = await callApi(request, "/api/admin/users");
@@ -350,7 +350,7 @@ export default function AdminUsersPage() {
                     type="text"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     required
                   />
                 </div>
@@ -359,7 +359,7 @@ export default function AdminUsersPage() {
                   <select
                     value={newRole}
                     onChange={(e) => setNewRole(e.target.value)}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base"
                   >
                     <option value="admin">Admin</option>
                     <option value="adult">Adult</option>
@@ -374,7 +374,7 @@ export default function AdminUsersPage() {
                     value={newPasscode}
                     onChange={(e) => setNewPasscode(e.target.value)}
                     placeholder="At least 4 characters"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     required
                   />
                 </div>
@@ -421,7 +421,7 @@ export default function AdminUsersPage() {
                     value={newPasscodeValue}
                     onChange={(e) => setNewPasscodeValue(e.target.value)}
                     placeholder="At least 4 characters"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     required
                     minLength={4}
                   />
@@ -492,7 +492,7 @@ export default function AdminUsersPage() {
                 value={deleteConfirmInput}
                 onChange={(e) => setDeleteConfirmInput(e.target.value)}
                 placeholder={`Type "${deleteUser.name}" to confirm`}
-                className="mb-4 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="mb-4 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
 
               <div className="flex gap-2">

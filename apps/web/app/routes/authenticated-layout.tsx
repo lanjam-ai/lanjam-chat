@@ -39,7 +39,11 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw new Response(null, { status: 302, headers: { Location: "/" } });
   }
   if (!meRes.ok) {
-    throw new Response(null, { status: 302, headers: { Location: "/" } });
+    // Preserve the requested path so login can redirect back
+    const url = new URL(request.url);
+    const path = url.pathname + url.search;
+    const redirect = path && path !== "/" ? `/?redirect=${encodeURIComponent(path)}` : "/";
+    throw new Response(null, { status: 302, headers: { Location: redirect } });
   }
   const { user }: { user: AuthUser } = await meRes.json();
   return { user };

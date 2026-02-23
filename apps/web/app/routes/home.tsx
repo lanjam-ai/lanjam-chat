@@ -1,6 +1,6 @@
 import { AlertTriangle, Lock, RefreshCw, User } from "lucide-react";
 import { useState } from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { Link, useLoaderData, useNavigate, useSearchParams } from "react-router";
 import { SplashScreen } from "~/components/splash-screen.js";
 import { applyTheme } from "~/hooks/use-theme.js";
 import { callApi } from "~/server/api.js";
@@ -43,7 +43,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   // Check if already authenticated
   const meRes = await callApi(request, "/api/auth/me");
   if (meRes.ok) {
-    throw new Response(null, { status: 302, headers: { Location: "/chats" } });
+    const url = new URL(request.url);
+    const redirect = url.searchParams.get("redirect");
+    const target = redirect && redirect.startsWith("/") ? redirect : "/chats";
+    throw new Response(null, { status: 302, headers: { Location: target } });
   }
 
   // Get public users
@@ -59,6 +62,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function HomePage() {
   const { users, servicesDown } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [showSplash, setShowSplash] = useState(!servicesDown);
   const [selectedUser, setSelectedUser] = useState<PublicUser | null>(null);
   const [passcode, setPasscode] = useState("");
@@ -90,7 +94,8 @@ export default function HomePage() {
 
       const { user } = await res.json();
       applyTheme(user.ui_theme ?? "system");
-      navigate("/chats");
+      const redirect = searchParams.get("redirect");
+      navigate(redirect && redirect.startsWith("/") ? redirect : "/chats");
     } catch {
       setError("Network error");
     } finally {
@@ -115,7 +120,7 @@ export default function HomePage() {
           </div>
 
           <div className="flex justify-center">
-            <div className="inline-flex flex-wrap gap-4">
+            <div className="inline-flex flex-wrap justify-center gap-4">
               {users.map((user) => (
                 <button
                   key={user.id}
@@ -171,7 +176,7 @@ export default function HomePage() {
                   onChange={(e) => setPasscode(e.target.value)}
                   placeholder="Passcode"
                   autoFocus
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
 
                 {error && <p className="text-sm text-destructive">{error}</p>}
