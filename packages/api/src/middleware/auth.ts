@@ -9,14 +9,24 @@ function parseCookie(cookieHeader: string, name: string): string | null {
   return match ? decodeURIComponent(match[1]) : null;
 }
 
+function extractToken(request: Request): string | null {
+  const cookieHeader = request.headers.get("cookie");
+  if (cookieHeader) {
+    const cookieToken = parseCookie(cookieHeader, COOKIE_NAME);
+    if (cookieToken) return cookieToken;
+  }
+  const authHeader = request.headers.get("authorization");
+  if (authHeader?.startsWith("Bearer ")) {
+    return authHeader.slice(7);
+  }
+  return null;
+}
+
 export async function authenticateRequest(
   request: Request,
   ctx: ApiContext,
 ): Promise<AuthContext | null> {
-  const cookieHeader = request.headers.get("cookie");
-  if (!cookieHeader) return null;
-
-  const token = parseCookie(cookieHeader, COOKIE_NAME);
+  const token = extractToken(request);
   if (!token) return null;
 
   const tokenHash = hashSessionToken(token);

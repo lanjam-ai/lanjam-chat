@@ -39,7 +39,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const meRes = await callApi(request, "/api/auth/me");
   const { user } = await meRes.json();
   if (user.role !== "admin")
-    throw new Response(null, { status: 302, headers: { Location: "/chats" } });
+    throw new Response(null, { status: 302, headers: { Location: "/chats?notice=no-permission" } });
 
   const rulesRes = await callApi(request, "/api/admin/safety/rules");
   const { rules }: { rules: SafetyRule[] } = rulesRes.ok ? await rulesRes.json() : { rules: [] };
@@ -213,7 +213,7 @@ export default function AdminSafetyPage() {
                     setEditedContent((prev) => ({ ...prev, [type]: e.target.value }))
                   }
                   rows={8}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-base font-mono ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
 
                 <div className="flex flex-wrap gap-2">

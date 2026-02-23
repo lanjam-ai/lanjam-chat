@@ -327,7 +327,7 @@ export default function OwnerConsolePage() {
                         onChange={(e) => setNewPasscode(e.target.value)}
                         placeholder="At least 4 characters"
                         autoFocus
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       />
                     </div>
 
@@ -341,7 +341,7 @@ export default function OwnerConsolePage() {
                         value={confirmPasscode}
                         onChange={(e) => setConfirmPasscode(e.target.value)}
                         placeholder="Confirm passcode"
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       />
                     </div>
 
@@ -378,7 +378,7 @@ export default function OwnerConsolePage() {
               <div className="flex-1">
                 <h3 className="font-semibold">System Reset</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  This will permanently delete all users, conversations, messages, files, and
+                  This will permanently delete all users, chats, messages, files, and
                   settings. The system will return to the initial setup state. The owner account
                   will be preserved.
                 </p>
@@ -457,7 +457,7 @@ export default function OwnerConsolePage() {
               <p>This action is irreversible. The following will be permanently deleted:</p>
               <ul className="list-inside list-disc space-y-1">
                 <li>All user accounts and sessions</li>
-                <li>All conversations and messages</li>
+                <li>All chats and messages</li>
                 <li>All uploaded files and extracted content</li>
                 <li>All embeddings and search indexes</li>
                 <li>All LLM model configuration</li>
@@ -478,7 +478,7 @@ export default function OwnerConsolePage() {
               onChange={(e) => setResetInput(e.target.value)}
               placeholder='Type "reset" to confirm'
               autoFocus
-              className="mb-4 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="mb-4 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
 
             <div className="flex gap-2">

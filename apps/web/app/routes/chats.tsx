@@ -19,7 +19,7 @@ import {
   X,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { Link, useLoaderData, useNavigate, useSearchParams } from "react-router";
 import { AiDisclaimerModal } from "~/components/ai-disclaimer-modal.js";
 import { ConfirmModal } from "~/components/confirm-modal.js";
 import { ModelSelector, type AvailableModel } from "~/components/model-selector.js";
@@ -35,7 +35,7 @@ import { callApi } from "~/server/api.js";
 import type { Route } from "./+types/chats";
 
 export function meta() {
-  return [{ title: "Conversations - LanJAM" }];
+  return [{ title: "Chats - LanJAM" }];
 }
 
 interface ConversationTag {
@@ -170,6 +170,20 @@ export default function ChatsPage() {
     isArchived: initialIsArchived,
   } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Show dismissable notice from redirect (e.g. permission denied)
+  const [notice, setNotice] = useState<string | null>(() => {
+    const n = searchParams.get("notice");
+    if (n === "no-permission") return "You don't have permission to access that page.";
+    return null;
+  });
+  useEffect(() => {
+    if (searchParams.has("notice")) {
+      searchParams.delete("notice");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, []);
 
   const [conversations, setConversations] = useState(initialConversations);
   const [isArchivedView, setIsArchivedView] = useState(initialIsArchived);
@@ -662,6 +676,21 @@ export default function ChatsPage() {
       {/* Page content */}
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-3xl px-4 py-6">
+          {/* Redirect notice */}
+          {notice && (
+            <div className="mb-4 flex items-center gap-3 rounded-md border border-border bg-card px-4 py-3">
+              <AlertTriangle className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <p className="flex-1 text-sm text-muted-foreground">{notice}</p>
+              <button
+                type="button"
+                onClick={() => setNotice(null)}
+                className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+
           {/* No models notice */}
           {availableModels.length === 0 && (
             <div className="mb-4 flex items-start gap-3 rounded-md border border-amber-500/50 bg-amber-500/10 px-4 py-3">
@@ -692,11 +721,11 @@ export default function ChatsPage() {
             <div className="mb-3 flex items-center gap-3 rounded-md border border-amber-500/30 bg-amber-500/10 px-4 py-3">
               <Archive className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
               <h2 className="text-lg font-semibold text-amber-700 dark:text-amber-300">
-                Archived Conversations
+                Archived Chats
               </h2>
             </div>
           ) : (
-            <h2 className="mb-3 text-lg font-semibold">Conversations</h2>
+            <h2 className="mb-3 text-lg font-semibold">Chats</h2>
           )}
 
           {/* Top bar: [Search...] [Topic] [Filter] [Edit] */}
@@ -707,8 +736,8 @@ export default function ChatsPage() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={isArchivedView ? "Search archived..." : "Search conversations..."}
-                className="flex h-9 w-full rounded-md border border-input bg-background pl-9 pr-8 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                placeholder={isArchivedView ? "Search archived..." : "Search chats..."}
+                className="flex h-9 w-full rounded-md border border-input bg-background pl-9 pr-8 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
               {search && (
                 <button
@@ -929,7 +958,7 @@ export default function ChatsPage() {
                     <div className="flex items-center gap-3">
                       <MessageSquare className="h-4 w-4 shrink-0 text-muted-foreground" />
                       <span className="flex-1 truncate text-sm font-medium">
-                        {result.title || "New Conversation"}
+                        {result.title || "New Chat"}
                       </span>
                       <span className="shrink-0 text-xs text-muted-foreground">
                         {formatRelativeTime(result.updated_at)}
@@ -952,12 +981,12 @@ export default function ChatsPage() {
               <MessageSquare className="h-10 w-10 text-muted-foreground/40 mb-3" />
               <p className="text-sm text-muted-foreground">
                 {isArchivedView
-                  ? "No archived conversations"
+                  ? "No archived chats"
                   : isFiltering
-                    ? "No conversations match the current filters"
+                    ? "No chats match the current filters"
                     : scope === "topic" && activeTopic
-                      ? `No conversations in "${activeTopic.name}" yet`
-                      : "No conversations yet"}
+                      ? `No chats in "${activeTopic.name}" yet`
+                      : "No chats yet"}
               </p>
             </div>
           ) : (
@@ -981,7 +1010,7 @@ export default function ChatsPage() {
                         <MessageSquare className="h-4 w-4 shrink-0 text-muted-foreground" />
                       )}
                       <span className="flex-1 truncate text-sm font-medium">
-                        {conv.title || "New Conversation"}
+                        {conv.title || "New Chat"}
                       </span>
                       <span className="shrink-0 text-xs text-muted-foreground">
                         {formatRelativeTime(conv.updated_at)}
@@ -1086,7 +1115,7 @@ export default function ChatsPage() {
                 }
                 rows={1}
                 disabled={creating || availableModels.length === 0}
-                className="w-full min-h-[36px] md:min-h-[76px] resize-none overflow-hidden border-0 bg-transparent px-4 pt-3 pb-1 text-sm placeholder:text-muted-foreground focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full min-h-[36px] md:min-h-[76px] resize-none overflow-hidden border-0 bg-transparent px-4 pt-3 pb-1 text-base placeholder:text-muted-foreground focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <div className="flex items-center justify-between px-3 py-2">
                 <div className="flex items-center gap-1">
@@ -1228,8 +1257,8 @@ export default function ChatsPage() {
       {/* Bulk delete confirmation */}
       <ConfirmModal
         open={showBulkDeleteConfirm}
-        title="Delete Conversations"
-        message={`${selectedIds.size} conversation${selectedIds.size > 1 ? "s" : ""} will be deleted. This cannot be undone.`}
+        title="Delete Chats"
+        message={`${selectedIds.size} chat${selectedIds.size > 1 ? "s" : ""} will be deleted. This cannot be undone.`}
         confirmLabel={bulkDeleting ? "Deleting..." : "Delete"}
         cancelLabel="Cancel"
         variant="danger"
@@ -1282,7 +1311,7 @@ export default function ChatsPage() {
                   value={groupFormName}
                   onChange={(e) => setGroupFormName(e.target.value)}
                   placeholder="e.g. Work, Study, Projects..."
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   autoFocus
                 />
               </div>
@@ -1294,7 +1323,7 @@ export default function ChatsPage() {
                   placeholder="Optional: provide guidance for the AI when chatting in this topic..."
                   rows={3}
                   maxLength={2000}
-                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
                 />
                 <p className="mt-1 text-xs text-muted-foreground">
                   This text will be sent as a system prompt when chatting in this topic.

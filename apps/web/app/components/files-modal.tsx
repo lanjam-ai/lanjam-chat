@@ -74,7 +74,7 @@ export function FilesModal({
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {files.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
-              No files attached to this conversation
+              No files attached to this chat
             </p>
           ) : (
             <div className="space-y-2">

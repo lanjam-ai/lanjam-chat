@@ -60,7 +60,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const meRes = await callApi(request, "/api/auth/me");
   const { user: me } = await meRes.json();
   if (me.role !== "admin") {
-    throw new Response(null, { status: 302, headers: { Location: "/chats" } });
+    throw new Response(null, { status: 302, headers: { Location: "/chats?notice=no-permission" } });
   }
 
   const modelsRes = await callApi(request, "/api/admin/llm/models");
@@ -848,7 +848,7 @@ export default function AdminLlmPage() {
                         value={customModel}
                         onChange={(e) => setCustomModel(e.target.value)}
                         placeholder="e.g. llama3.2:latest"
-                        className="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        className="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       />
                       <button
                         type="submit"
@@ -876,7 +876,7 @@ export default function AdminLlmPage() {
                         setTestResult(null);
                       }}
                       placeholder="e.g. 192.168.1.100:11434"
-                      className="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     />
                     <button
                       onClick={testConnection}

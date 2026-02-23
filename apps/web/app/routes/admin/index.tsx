@@ -41,7 +41,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const meRes = await callApi(request, "/api/auth/me");
   const { user } = await meRes.json();
   if (user.role !== "admin") {
-    throw new Response(null, { status: 302, headers: { Location: "/chats" } });
+    throw new Response(null, { status: 302, headers: { Location: "/chats?notice=no-permission" } });
   }
 
   const [statusRes, ownerStatusRes] = await Promise.all([
@@ -546,7 +546,7 @@ export default function AdminDashboard() {
               onChange={(e) => setResetInput(e.target.value)}
               placeholder='Type "reset" to confirm'
               autoFocus
-              className="mb-4 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="mb-4 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
 
             <div className="flex gap-2">
@@ -596,7 +596,7 @@ export default function AdminDashboard() {
                   onChange={(e) => setOwnerPasscode(e.target.value)}
                   placeholder="At least 4 characters"
                   autoFocus
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
 
@@ -610,7 +610,7 @@ export default function AdminDashboard() {
                   value={ownerConfirmPasscode}
                   onChange={(e) => setOwnerConfirmPasscode(e.target.value)}
                   placeholder="Confirm passcode"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
 
